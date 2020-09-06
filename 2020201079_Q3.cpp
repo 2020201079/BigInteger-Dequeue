@@ -6,15 +6,16 @@
 
 using namespace std;
 
+template <typename T>
 class Deque{
     private:
-        int *arr;
+        T *arr;
         int sizeDeque,top,rear,count;
         void increaseSize(){
-            int* prev = arr;
+            T* prev = arr;
             int prevSize = sizeDeque;
             sizeDeque *= 2;
-            arr = new int[sizeDeque];
+            arr = new T[sizeDeque];
             int i=0;
             while(top != rear){
                 arr[i] = prev[top];
@@ -27,10 +28,10 @@ class Deque{
             delete[] prev; // remove the old array
         }
         void increaseSize(int x){
-            int* prev = arr;
+            T* prev = arr;
             int prevSize = sizeDeque;
             sizeDeque = x;
-            arr = new int[sizeDeque];
+            arr = new T[sizeDeque];
             int i=0;
             while(top != rear){
                 arr[i] = prev[top];
@@ -44,25 +45,18 @@ class Deque{
         }
     public :
         Deque(){
-            arr = new int[default_size];
+            arr = new T[default_size];
             top = -1;rear = -1;count=0;
             this->sizeDeque = default_size;
         }
-        /*
-        Deque(int size){
+        Deque(int size, T value){
             this->sizeDeque = size;
-            arr = new int[size];
-            top = -1;rear = -1;count=0;
-        }*/
-        Deque(int size, int value){
-            this->sizeDeque = size;
-            arr = new int[size];
+            arr = new T[size];
             fill_n(arr,size,value);
             top = 0;rear = size-1;count=size;
         }
 
-        void resize(int x, int d){
-            //changes here is required 
+        void resize(int x, T d){ 
             if(x < count){
                 cout<<"resizing will delete some elements "<<endl;
                 rear = (rear - count+x)%sizeDeque;
@@ -83,7 +77,6 @@ class Deque{
                 }
                 rear = (rear+x-count) % sizeDeque; 
                 count = x; 
-                //increaseSize(x);
             }
         }
         bool empty(){
@@ -96,7 +89,7 @@ class Deque{
                 return true;
             return false;
         }
-        void push_back(int x){
+        void push_back(T x){
             if(this->full()){
                 cout<<"deque is full calling increase "<<endl;
                 this->increaseSize();
@@ -135,9 +128,8 @@ class Deque{
                 --count;
             }
         }
-        void push_front(int x){
+        void push_front(T x){
             if(this->full()){
-                cout<<"deque is full calling increase"<<endl;
                 this->increaseSize();
                 this->push_front(x);
                 return;
@@ -146,24 +138,21 @@ class Deque{
                 top=0;rear=0;
             }
             else{
-                top = (top-1)%sizeDeque; // verify if the mod returns pos values
+                top = (top-1)%sizeDeque;
                 if(top<0) top += sizeDeque;
             }       
             arr[top] = x;
-            cout<<"top is " << top << endl;
             ++count;
         }
-        int front(){
+        T front(){
             if(this->empty()){
-                cout<<"called front() but deque is empty ";
-                return -1;
+                throw runtime_error("called front() but deque is empty ");
             }
             return arr[top];
         }
-        int back(){
+        T back(){
             if(this->empty()){
-                cout<<"called back() but deque is empty ";
-                return -1;
+                throw runtime_error("called back() but deque is empty ");
             }
             return arr[rear];
         }
@@ -176,12 +165,10 @@ class Deque{
             top=-1;rear=-1;count=0;
         }
 
-        int &operator[](int i){
+        T &operator[](int i){
             if(i<0 || i>=count){
                 cout<<"Index out of bounds "<<endl;
-                int i = -1;
-                int &q = i;
-                return q;
+                throw runtime_error("Index out of bounds");
             }
             int temp = top;
             temp=(top+i)%sizeDeque;
@@ -198,12 +185,13 @@ class Deque{
 };
 
 int main(){
-    auto deque = Deque();
-    deque.push_front(3);deque.push_front(5);deque.push_front(7);
+    auto deque = Deque<char>(2,'n');
     deque.print();
-    deque.resize(1,123);
+    deque.push_front('v');deque.push_front('a');deque.push_front('r');
     deque.print();
-    deque.resize(4,89);
+    deque.resize(5,'z');
+    deque.print();
+    deque.resize(7,'h');
     deque.print();
     cout<<"First ele is "<<deque[0]<<endl;
     cout<<"4th ele is "<<deque[3]<<endl;
